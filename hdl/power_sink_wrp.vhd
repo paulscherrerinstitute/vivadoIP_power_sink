@@ -112,6 +112,7 @@ architecture rtl of power_sink_wrp is
 	signal EnaFf							: std_logic;
 	signal EnaSrl							: std_logic;
 	signal EnaBram							: std_logic;
+	signal EnaGlobal						: std_logic;
 	signal PatternFf						: std_logic_vector(31 downto 0);
 	signal PatternSrl						: std_logic_vector(31 downto 0);
 	signal PatternBram						: std_logic_vector(31 downto 0);
@@ -122,9 +123,12 @@ architecture rtl of power_sink_wrp is
 	signal PatternOutSrl					: std_logic;
 	signal PatternOutBramA					: std_logic_vector(31 downto 0);
 	signal PatternOutBramB					: std_logic_vector(31 downto 0);
+	signal EnaFfLocal						: std_logic;
+	signal EnaSrlLocal						: std_logic;
+	signal EnaBramLocal						: std_logic;
 	
 	constant RegResetVal_c : t_aslv32(0 to 6) := (	X"00000001", X"00000001",  X"00000001", 	-- All generators enabled by default
-                                                    X"00000000",                                -- Unused
+                                                    X"00000001",                                -- Global enable is set by default
                                                     X"AAAAAAAA", X"AAAAAAAA",  X"AAAAAAAA");    -- Default pattern is all A's    (always toggle)
 	
 
@@ -211,6 +215,7 @@ begin
 	reg_rdata(0)(0)	<= reg_wdata(0)(0);		-- FF enable
 	reg_rdata(1)(0)	<= reg_wdata(1)(0);		-- SRL enable
 	reg_rdata(2)(0)	<= reg_wdata(2)(0);		-- BRAM enable
+	reg_rdata(3)(0)	<= reg_wdata(3)(0);		-- Global enable
 	
 	reg_rdata(4)	<= reg_wdata(4);		-- FF pattern
 	reg_rdata(5)	<= reg_wdata(5);		-- SRL pattern
@@ -221,7 +226,7 @@ begin
 	----------------------------------------------------------------------------- 
 	i_cc_to_sink : entity work.psi_common_status_cc
 		generic map (
-			DataWidth_g		=> 3
+			DataWidth_g		=> 4
 		)
 		port map (
 			ClkA		=> s00_axi_aclk,
@@ -229,12 +234,14 @@ begin
 			DataA(0)	=> reg_wdata(0)(0),
 			DataA(1)	=> reg_wdata(1)(0),
 			DataA(2)	=> reg_wdata(2)(0),
+			DataA(3)	=> reg_wdata(3)(0),
 			ClkB		=> ClkPowerSink,
 			RstInB		=> '0',
 			RstOutB		=> RstPowerSink,
 			DataB(0)	=> EnaFf,
 			DataB(1)	=> EnaSrl,
-			DataB(2)	=> EnaBram
+			DataB(2)	=> EnaBram,
+			DataB(3)	=> EnaGlobal
 		);
 		
 	i_cc_from_sink : entity work.psi_common_status_cc
@@ -304,6 +311,7 @@ begin
 	-----------------------------------------------------------------------------
 	-- Implementation
 	----------------------------------------------------------------------------- 
+	EnaFfLocal <= EnaFf and EnaGlobal;
 	i_ff : entity work.power_sink_ff
 		generic map (
 			FlipFlogs_g	=> FlipFlogs_g
@@ -311,12 +319,13 @@ begin
 		port map (
 			Clk			=> ClkPowerSink,
 			Rst			=> RstPowerSink,
-			Enable		=> EnaFf,
+			Enable		=> EnaFfLocal,
 			PatternSet	=> PatternSetFf,
 			PatternIn	=> PatternFf,
 			PatternOut	=> PatternOutFf
 		);
 		
+	EnaSrlLocal <= EnaSrl and EnaGlobal;
 	i_srl : entity work.power_sink_srl
 		generic map (
 			SrlSize_g	=> SrlSize_g,
@@ -325,12 +334,13 @@ begin
 		port map (
 			Clk			=> ClkPowerSink,
 			Rst			=> RstPowerSink,
-			Enable		=> EnaSrl,
+			Enable		=> EnaSrlLocal,
 			PatternSet	=> PatternSetSrl,
 			PatternIn	=> PatternSrl,
 			PatternOut	=> PatternOutSrl
 		);
 		
+	EnaBramLocal <= EnaBram and EnaGlobal;
 	i_bram : entity work.power_sink_bram
 		generic map (
 			BramDepth_g	=> BramDepth_g,

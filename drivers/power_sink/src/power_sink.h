@@ -24,6 +24,7 @@ extern "C" {
 #define POWER_SINK_REG_FF_ENA				0x00
 #define POWER_SINK_REG_SRL_ENA				0x04
 #define POWER_SINK_REG_BRAM_ENA				0x08
+#define POWER_SINK_REG_GLOBAL_ENA			0x0C
 #define POWER_SINK_REG_FF_PATTERN			0x10
 #define POWER_SINK_REG_SRL_PATTERN			0x14
 #define POWER_SINK_REG_BRAM_PATTERN			0x18
@@ -59,6 +60,14 @@ void PowerSink_SetSrlEnable(const uint32_t baseAddr, const bool enable);
  * @param enable		True = enable BRAM toggling, False = disable BRAM toggling
  */
 void PowerSink_SetBramEnable(const uint32_t baseAddr, const bool enable);
+
+/**
+ * Set global enable
+ *
+ * @param baseAddr		Base address of the IP component to access
+ * @param enable		True = all parts enabled, False = all parts disable
+ */
+void PowerSink_SetGlobalEnable(const uint32_t baseAddr, const bool enable);
 
 /**
  * Set pattern to toggle FFs (shifted every clock cycle)

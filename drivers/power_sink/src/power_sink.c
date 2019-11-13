@@ -21,10 +21,14 @@ void PowerSink_SetSrlEnable(const uint32_t baseAddr, const bool enable)
 	Xil_Out32(baseAddr + POWER_SINK_REG_SRL_ENA, (uint32_t)enable);
 }
 
-
 void PowerSink_SetBramEnable(const uint32_t baseAddr, const bool enable)
 {
 	Xil_Out32(baseAddr + POWER_SINK_REG_BRAM_ENA, (uint32_t)enable);
+}
+
+void PowerSink_SetGlobalEnable(const uint32_t baseAddr, const bool enable)
+{
+	Xil_Out32(baseAddr + POWER_SINK_REG_GLOBAL_ENA, (uint32_t)enable);
 }
 
 void PowerSink_SetFfPattern(const uint32_t baseAddr, const uint32_t pattern)
