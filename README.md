@@ -21,9 +21,11 @@ The required folder structure looks as given below (folder names must be matched
 Alternatively the repository [psi\_fpga\_all](https://github.com/paulscherrerinstitute/psi_fpga_all) can be used. This repo contains all FPGA related repositories as submodules in the correct folder structure.
 
 * TCL
+  * [PsiSim](https://github.com/paulscherrerinstitute/PsiSim) (2.1.0 or higher, for development only)
   * [PsiIpPackage](https://github.com/paulscherrerinstitute/PsiIpPackage) (2.0.0, for development only )
 * VHDL
   * [psi\_common](https://github.com/paulscherrerinstitute/psi_common) (2.5.0 or higher)
+  * [psi\_tb](https://github.com/paulscherrerinstitute/psi_tb) (2.2.2 or higher, for development only)
 * VivadoIp
   * [**vivadoIP\_power\_sink**](https://github.com/paulscherrerinstitute/vivadoIP_power_sink)
   

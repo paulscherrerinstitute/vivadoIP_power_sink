@@ -67,7 +67,13 @@ begin
 		
 			if Enable = '1' then
 				PatternGen 	<= PatternGen(62 downto 0) & PatternGen(63);
-				AddrCnt		<= std_logic_vector(unsigned(AddrCnt)+1);
+				-- Wrap address one cycle before BRAM end address to make sure that bram content toggles
+				if unsigned(AddrCnt) = BramDepth_g-2 then	
+					AddrCnt <= (others => '0');
+				else
+					AddrCnt		<= std_logic_vector(unsigned(AddrCnt)+1);
+				end if;
+				-- Make sure all bits are present in the pattern output to prevent optimization
 				PatternOutA <= (others => '0');
 				if BramWidth_g <= 32 then
 					PatternOutA(BramWidth_g-1 downto 0) <= DataA(DataA'high);
