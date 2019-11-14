@@ -128,7 +128,7 @@ architecture rtl of power_sink_wrp is
 	signal EnaBramLocal						: std_logic;
 	
 	constant RegResetVal_c : t_aslv32(0 to 6) := (	X"00000001", X"00000001",  X"00000001", 	-- All generators enabled by default
-                                                    X"00000001",                                -- Global enable is set by default
+                                                    X"00000000",                                -- Global enable is cleared by default
                                                     X"AAAAAAAA", X"AAAAAAAA",  X"AAAAAAAA");    -- Default pattern is all A's    (always toggle)
 	
 
