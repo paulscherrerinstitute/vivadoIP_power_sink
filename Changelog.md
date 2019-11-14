@@ -1,3 +1,3 @@
-## 1.0.0 [TO BE RELEASED]
+## 1.0.0 
 
 * First Release

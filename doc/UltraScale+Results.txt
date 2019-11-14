@@ -1,0 +1,21 @@
+Configuration:
+FF:		30k
+SRL x 32:	15k
+BRAM 18x1024:	300
+Clock:		250 MHz
+
+No Logic between LUT:	
+0.7A 	-> 2.2A = ~1.5A
+441 Logic LUT 
+
+XOR3 between FF:	
+0.9A 	-> 3.1A = ~2.2A
+30382 Logic LUT
+
+AND3 between FF:
+0.9A	-> 2.9A = ~2.0A
+30351 Logic LUT
+
+AND14 between FF:	
+1.1A   -> 4.3A = ~3.2A
+59809 Logic LUT

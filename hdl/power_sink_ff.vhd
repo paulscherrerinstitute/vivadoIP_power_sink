@@ -22,7 +22,9 @@ library ieee;
 ------------------------------------------------------------------------------
 entity power_sink_ff is
 	generic (
-		FlipFlogs_g	: positive range 64 to integer'high	:= 8192
+		FlipFlogs_g	: positive range 1024 to integer'high	:= 8192;
+		AddLuts_g	: boolean								:= true;
+		LutInputs_g	: integer range 2 to 30					:= 30
 	);
 	port (
 		-- Control Signals
@@ -56,12 +58,25 @@ architecture rtl of power_sink_ff is
 begin
 
 	p_impl : process(Clk)
+		variable NonLutFfs_c	: integer	:= LutInputs_g*32;
+		variable LutOutput_v 	: std_logic_vector(FlipFlogs_g-NonLutFfs_c-1 downto 0);
 	begin
 		if rising_edge(Clk) then
 		
 			if Enable = '1' then
 				PatternGen 	<= PatternGen(30 downto 0) & PatternGen(31);
-				FfChain 	<= FfChain(FlipFlogs_g-2 downto 0) & PatternGen(31);
+				if not AddLuts_g then
+					FfChain 	<= FfChain(FlipFlogs_g-2 downto 0) & PatternGen(31);
+				else
+					-- Add LUT before each FF
+					FfChain(NonLutFfs_c-1 downto 0)		<= 	FfChain(NonLutFfs_c-2 downto 0) & PatternGen(31);
+					LutOutput_v := FfChain(FfChain'high-NonLutFfs_c-1 downto 0) & PatternGen(31);
+					for i in 1 to LutInputs_g-1 loop
+						LutOutput_v := LutOutput_v and FfChain(FfChain'high-NonLutFfs_c+32*i-1 downto 32*i-1);
+					end loop;					
+					FfChain(FfChain'high downto NonLutFfs_c)	<= 	LutOutput_v;
+				end if;
+					
 				PatternOut 	<= FfChain(FlipFlogs_g-1 downto FlipFlogs_g-32);
 			end if;
 		

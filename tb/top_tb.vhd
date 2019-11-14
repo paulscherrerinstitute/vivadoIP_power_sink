@@ -81,7 +81,9 @@ begin
 		generic map
 		(
 			-- Component Generics
-			FlipFlogs_g	=> 128,
+			FlipFlogs_g	=> 2048,
+			AddLuts_g	=> true,
+			LutInputs_g => 4,
 			SrlSize_g	=> 32,
 			SrlCount_g	=> 32,
 			BramDepth_g	=> 16,

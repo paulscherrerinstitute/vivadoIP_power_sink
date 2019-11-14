@@ -4,6 +4,8 @@ proc init_gui { IPINST } {
   #Adding Page
   set Configuration [ipgui::add_page $IPINST -name "Configuration"]
   ipgui::add_param $IPINST -name "FlipFlogs_g" -parent ${Configuration}
+  ipgui::add_param $IPINST -name "AddLuts_g" -parent ${Configuration}
+  ipgui::add_param $IPINST -name "LutInputs_g" -parent ${Configuration}
   ipgui::add_param $IPINST -name "SrlSize_g" -parent ${Configuration}
   ipgui::add_param $IPINST -name "SrlCount_g" -parent ${Configuration}
   ipgui::add_param $IPINST -name "BramDepth_g" -parent ${Configuration}
@@ -11,6 +13,15 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "BramCount_g" -parent ${Configuration}
 
 
+}
+
+proc update_PARAM_VALUE.AddLuts_g { PARAM_VALUE.AddLuts_g } {
+	# Procedure called to update AddLuts_g when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.AddLuts_g { PARAM_VALUE.AddLuts_g } {
+	# Procedure called to validate AddLuts_g
+	return true
 }
 
 proc update_PARAM_VALUE.BramCount_g { PARAM_VALUE.BramCount_g } {
@@ -58,6 +69,15 @@ proc validate_PARAM_VALUE.FlipFlogs_g { PARAM_VALUE.FlipFlogs_g } {
 	return true
 }
 
+proc update_PARAM_VALUE.LutInputs_g { PARAM_VALUE.LutInputs_g } {
+	# Procedure called to update LutInputs_g when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.LutInputs_g { PARAM_VALUE.LutInputs_g } {
+	# Procedure called to validate LutInputs_g
+	return true
+}
+
 proc update_PARAM_VALUE.SrlCount_g { PARAM_VALUE.SrlCount_g } {
 	# Procedure called to update SrlCount_g when any of the dependent parameters in the arguments change
 }
@@ -80,6 +100,16 @@ proc validate_PARAM_VALUE.SrlSize_g { PARAM_VALUE.SrlSize_g } {
 proc update_MODELPARAM_VALUE.FlipFlogs_g { MODELPARAM_VALUE.FlipFlogs_g PARAM_VALUE.FlipFlogs_g } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.FlipFlogs_g}] ${MODELPARAM_VALUE.FlipFlogs_g}
+}
+
+proc update_MODELPARAM_VALUE.AddLuts_g { MODELPARAM_VALUE.AddLuts_g PARAM_VALUE.AddLuts_g } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.AddLuts_g}] ${MODELPARAM_VALUE.AddLuts_g}
+}
+
+proc update_MODELPARAM_VALUE.LutInputs_g { MODELPARAM_VALUE.LutInputs_g PARAM_VALUE.LutInputs_g } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.LutInputs_g}] ${MODELPARAM_VALUE.LutInputs_g}
 }
 
 proc update_MODELPARAM_VALUE.SrlSize_g { MODELPARAM_VALUE.SrlSize_g PARAM_VALUE.SrlSize_g } {

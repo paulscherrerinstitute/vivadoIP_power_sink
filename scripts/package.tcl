@@ -70,8 +70,17 @@ add_drivers_relative ../drivers/power_sink { \
 gui_add_page "Configuration"
 
 gui_create_parameter "FlipFlogs_g" "Number of Flip-Flops to toggle"
-gui_parameter_set_range 64 214783647
+gui_parameter_set_range 1024 214783647
 gui_add_parameter
+
+gui_create_parameter "AddLuts_g" "Add luts between Flip-Flops"
+gui_parameter_set_widget_checkbox
+gui_add_parameter
+
+gui_create_parameter "LutInputs_g" "Inputs for logic between Flip-Flops"
+gui_parameter_set_range 2 30
+gui_add_parameter
+
 
 gui_create_parameter "SrlSize_g" "Number of bits per SRL"
 gui_parameter_set_range 4 214783647

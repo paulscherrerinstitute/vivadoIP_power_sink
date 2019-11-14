@@ -23,7 +23,9 @@ entity power_sink_wrp is
 	generic
 	(	
 		-- Power Sink Parameters (defaults are choosen small for quick test synthesis)
-		FlipFlogs_g	: positive range 64 to 214783647	:= 128;
+		FlipFlogs_g	: positive range 1024 to 214783647	:= 1024;
+		AddLuts_g	: boolean							:= true;
+		LutInputs_g	: integer range 2 to 30				:= 30;
 		SrlSize_g	: positive range 4 to 214783647		:= 32;		-- Use 32 for 7Series one SRL per FF
 		SrlCount_g	: positive range 4 to 214783647		:= 32;
 		BramDepth_g	: positive range 4 to 214783647 	:= 1024;
@@ -314,7 +316,9 @@ begin
 	EnaFfLocal <= EnaFf and EnaGlobal;
 	i_ff : entity work.power_sink_ff
 		generic map (
-			FlipFlogs_g	=> FlipFlogs_g
+			FlipFlogs_g	=> FlipFlogs_g,
+			AddLuts_g => AddLuts_g,
+			LutInputs_g => LutInputs_g
 		)
 		port map (
 			Clk			=> ClkPowerSink,
