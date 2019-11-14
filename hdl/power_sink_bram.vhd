@@ -50,11 +50,15 @@ end entity;
 ------------------------------------------------------------------------------
 architecture rtl of power_sink_bram is	
 
-	signal PatternGen				: std_logic_vector(63 downto 0);
+	signal Pattern					: std_logic_vector(31 downto 0);
+	
+	signal PatternGenA				: std_logic_vector(31 downto 0);
+	signal PatternGenB				: std_logic_vector(31 downto 0);
 	type Data_t is array (natural range <>) of std_logic_vector(BramWidth_g-1 downto 0);
 	signal DataA					: Data_t(0 to BramCount_g);
 	signal DataB					: Data_t(0 to BramCount_g);
-	signal AddrCnt					: std_logic_vector(log2ceil(BramDepth_g)-1 downto 0);
+	signal AddrCntA					: std_logic_vector(log2ceil(BramDepth_g)-1 downto 0);
+	signal AddrCntB					: std_logic_vector(log2ceil(BramDepth_g)-1 downto 0);
 	type Addr_t is array (natural range <>) of std_logic_vector(log2ceil(BramDepth_g)-1 downto 0);
 	signal AddrA					: Addr_t(0 to BramCount_g-1);
 	signal AddrB					: Addr_t(0 to BramCount_g-1);
@@ -66,12 +70,20 @@ begin
 		if rising_edge(Clk) then
 		
 			if Enable = '1' then
-				PatternGen 	<= PatternGen(62 downto 0) & PatternGen(63);
 				-- Wrap address one cycle before BRAM end address to make sure that bram content toggles
-				if unsigned(AddrCnt) = BramDepth_g-2 then	
-					AddrCnt <= (others => '0');
+				if unsigned(AddrCntA) = BramDepth_g-1 then	
+					AddrCntA 	<= (others => '0');
+					PatternGenA	<= Pattern;
 				else
-					AddrCnt		<= std_logic_vector(unsigned(AddrCnt)+1);
+					AddrCntA		<= std_logic_vector(unsigned(AddrCntA)+1);
+					PatternGenA		<= PatternGenA(30 downto 0) & PatternGenA(31);
+				end if;
+				if unsigned(AddrCntB) = BramDepth_g-1 then	
+					AddrCntB <= (others => '0');
+					PatternGenB	<= not Pattern;
+				else
+					AddrCntB		<= std_logic_vector(unsigned(AddrCntB)+1);
+					PatternGenB		<= PatternGenB(30 downto 0) & PatternGenB(31);
 				end if;
 				-- Make sure all bits are present in the pattern output to prevent optimization
 				PatternOutA <= (others => '0');
@@ -84,26 +96,30 @@ begin
 				end if;
 			end if;
 			
-			AddrA(0) <= AddrCnt;
+			AddrA(0) <= AddrCntA;
 			AddrA(1 to BramCount_g-1) <= AddrA(0 to BramCount_g-2);
-			AddrB(0) <= not AddrCnt(AddrCnt'high) & AddrCnt(AddrCnt'high-1 downto 0);
+			AddrB(0) <= AddrCntB;
 			AddrB(1 to BramCount_g-1) <= AddrB(0 to BramCount_g-2);
 		
 			if PatternSet = '1' then
-				PatternGen <= PatternIn & PatternIn;
+				PatternGenB <= not PatternIn;
+				PatternGenA <= PatternIn;
+				Pattern		<= PatternIn;
 			end if;
 			
 		
 			if Rst = '1' then
-				PatternGen 	<= X"AAAA_AAAA_AAAA_AAAA";
-				AddrCnt		<= (others => '0');
+				Pattern 							<= X"AAAA_AAAA";
+				AddrCntA							<= (others => '0');
+				AddrCntB(AddrCntB'high)				<= '1';
+				AddrCntB(AddrCntB'high-1 downto 0)	<= (others => '0');
 			end if;
 			
 		end if;
 	end process;	
 	
-	DataA(0) <= PatternGen(BramWidth_g-1 downto 0);
-	DataB(0) <= PatternGen(PatternGen'high downto PatternGen'high-BramWidth_g+1);
+	DataA(0) <= PatternGenA(BramWidth_g-1 downto 0);
+	DataB(0) <= PatternGenB(BramWidth_g-1 downto 0);
 	
 	g_bram : for i in 0 to BramCount_g-1 generate
 		i_ram : entity work.psi_common_tdp_ram

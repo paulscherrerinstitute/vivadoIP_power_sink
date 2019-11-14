@@ -175,6 +175,8 @@ begin
 		wait for 1 us;
 		wait until rising_edge(aclk);
 		
+		axi_single_write(16#0C#, 1, axi_ms, axi_sm, aclk); -- set global enable
+		
 		wait for 100 us;
 		
 		-- TB done

@@ -219,7 +219,7 @@ begin
 	
 	reg_rdata(4)	<= reg_wdata(4);		-- FF pattern
 	reg_rdata(5)	<= reg_wdata(5);		-- SRL pattern
-	reg_rdata(6)	<= reg_wdata(5);		-- BRAM pattern
+	reg_rdata(6)	<= reg_wdata(6);		-- BRAM pattern
    
   	-----------------------------------------------------------------------------
 	-- Clock Crossing
@@ -351,7 +351,7 @@ begin
 		port map (
 			Clk			=> ClkPowerSink,
 			Rst			=> RstPowerSink,
-			Enable		=> EnaBram,
+			Enable		=> EnaBramLocal,
 			PatternSet	=> PatternSetBram,
 			PatternIn	=> PatternBram,
 			PatternOutA	=> PatternOutBramA,
