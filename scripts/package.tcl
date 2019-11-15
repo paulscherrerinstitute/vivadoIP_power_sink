@@ -33,6 +33,7 @@ add_sources_relative { \
 	../hdl/power_sink_ff.vhd \
 	../hdl/power_sink_srl.vhd \
 	../hdl/power_sink_bram.vhd \
+	../hdl/power_sink_dsp.vhd \
 	../hdl/power_sink_wrp.vhd \
 }
 
@@ -67,7 +68,7 @@ add_drivers_relative ../drivers/power_sink { \
 ###############################################################
 
 #User Parameters
-gui_add_page "Configuration"
+gui_add_page "Fabric"
 
 gui_create_parameter "FlipFlogs_g" "Number of Flip-Flops to toggle"
 gui_parameter_set_range 1024 214783647
@@ -81,7 +82,6 @@ gui_create_parameter "LutInputs_g" "Inputs for logic between Flip-Flops"
 gui_parameter_set_range 2 30
 gui_add_parameter
 
-
 gui_create_parameter "SrlSize_g" "Number of bits per SRL"
 gui_parameter_set_range 4 214783647
 gui_add_parameter
@@ -89,6 +89,8 @@ gui_add_parameter
 gui_create_parameter "SrlCount_g" "Number of SRLs to toggle"
 gui_parameter_set_range 4 214783647
 gui_add_parameter
+
+gui_add_page "BlockRAM"
 
 gui_create_parameter "BramDepth_g" "Depth of BRAMs to implement"
 gui_parameter_set_range 4 214783647
@@ -100,6 +102,24 @@ gui_add_parameter
 
 gui_create_parameter "BramCount_g" "Number of BRAMs to toggle"
 gui_parameter_set_range 4 214783647
+gui_add_parameter
+
+gui_add_page "DSP Slices"
+
+gui_create_parameter "DspInAWidth_g" "Multiplier input A width"
+gui_parameter_set_range 1 32
+gui_add_parameter
+
+gui_create_parameter "DspInBWidth_g" "Multiplier input B width"
+gui_parameter_set_range 1 32
+gui_add_parameter
+
+gui_create_parameter "DspAccuWidth_g" "DSP Slice accumulator chain width"
+gui_parameter_set_range 1 64
+gui_add_parameter
+
+gui_create_parameter "DspCount_g" "Number of DSP Slices to toggle"
+gui_parameter_set_range 1 214783647
 gui_add_parameter
 
 ###############################################################

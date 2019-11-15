@@ -23,14 +23,18 @@ entity power_sink_wrp is
 	generic
 	(	
 		-- Power Sink Parameters (defaults are choosen small for quick test synthesis)
-		FlipFlogs_g	: positive range 1024 to 214783647	:= 1024;
-		AddLuts_g	: boolean							:= true;
-		LutInputs_g	: integer range 2 to 30				:= 30;
-		SrlSize_g	: positive range 4 to 214783647		:= 32;		-- Use 32 for 7Series one SRL per FF
-		SrlCount_g	: positive range 4 to 214783647		:= 32;
-		BramDepth_g	: positive range 4 to 214783647 	:= 1024;
-		BramWidth_g	: positive range 4 to 63 			:= 18;
-		BramCount_g	: positive range 4 to 214783647	  	:= 4;
+		FlipFlogs_g		: positive range 1024 to 214783647	:= 1024;
+		AddLuts_g		: boolean							:= true;
+		LutInputs_g		: integer range 2 to 30				:= 30;
+		SrlSize_g		: positive range 4 to 214783647		:= 32;		-- Use 32 for 7Series one SRL per FF
+		SrlCount_g		: positive range 4 to 214783647		:= 32;
+		BramDepth_g		: positive range 4 to 214783647 	:= 1024;
+		BramWidth_g		: positive range 4 to 63 			:= 18;
+		BramCount_g		: positive range 4 to 214783647	  	:= 4;
+		DspInAWidth_g	: positive range 1 to 32			:= 18;
+		DspInBWidth_g	: positive range 1 to 32			:= 25;
+		DspAccuWidth_g	: positive range 1 to 64			:= 48;
+		DspCount_g		: positive							:= 20;
 
 		
 		-- AXI Parameters
@@ -114,6 +118,7 @@ architecture rtl of power_sink_wrp is
 	signal EnaFf							: std_logic;
 	signal EnaSrl							: std_logic;
 	signal EnaBram							: std_logic;
+	signal EnaDsp							: std_logic;
 	signal EnaGlobal						: std_logic;
 	signal PatternFf						: std_logic_vector(31 downto 0);
 	signal PatternSrl						: std_logic_vector(31 downto 0);
@@ -125,13 +130,20 @@ architecture rtl of power_sink_wrp is
 	signal PatternOutSrl					: std_logic;
 	signal PatternOutBramA					: std_logic_vector(31 downto 0);
 	signal PatternOutBramB					: std_logic_vector(31 downto 0);
+	signal PatternOutDsp					: std_logic_vector(31 downto 0);
+	signal PatternDspA1						: std_logic_vector(31 downto 0);
+	signal PatternDspA2						: std_logic_vector(31 downto 0);
+	signal PatternDspB1						: std_logic_vector(31 downto 0);
+	signal PatternDspB2						: std_logic_vector(31 downto 0);
 	signal EnaFfLocal						: std_logic;
 	signal EnaSrlLocal						: std_logic;
 	signal EnaBramLocal						: std_logic;
+	signal EnaDspLocal						: std_logic;
 	
-	constant RegResetVal_c : t_aslv32(0 to 6) := (	X"00000001", X"00000001",  X"00000001", 	-- All generators enabled by default
-                                                    X"00000000",                                -- Global enable is cleared by default
-                                                    X"AAAAAAAA", X"AAAAAAAA",  X"AAAAAAAA");    -- Default pattern is all A's    (always toggle)
+	constant RegResetVal_c : t_aslv32(0 to 15) := (	X"00000001", X"00000001", X"00000001", X"00000001",	-- All generators enabled by default
+                                                    X"00000000", X"00000000", X"00000000", X"00000000", -- Global enable is cleared by default (3 unused)
+                                                    X"AAAAAAAA", X"AAAAAAAA", X"AAAAAAAA", X"00000000",	-- Default pattern is all A's   (always toggle) (1 unused)
+													X"00000001", X"FFFFFFFF", X"00000001", X"FFFFFFFF");-- DSP toggles between -1 and +1
 	
 
 begin
@@ -217,18 +229,23 @@ begin
 	reg_rdata(0)(0)	<= reg_wdata(0)(0);		-- FF enable
 	reg_rdata(1)(0)	<= reg_wdata(1)(0);		-- SRL enable
 	reg_rdata(2)(0)	<= reg_wdata(2)(0);		-- BRAM enable
-	reg_rdata(3)(0)	<= reg_wdata(3)(0);		-- Global enable
+	reg_rdata(3)(0)	<= reg_wdata(3)(0);		-- DSP enble
+	reg_rdata(4)(0)	<= reg_wdata(4)(0);		-- Global enable
 	
-	reg_rdata(4)	<= reg_wdata(4);		-- FF pattern
-	reg_rdata(5)	<= reg_wdata(5);		-- SRL pattern
-	reg_rdata(6)	<= reg_wdata(6);		-- BRAM pattern
+	reg_rdata(8)	<= reg_wdata(8);		-- FF pattern
+	reg_rdata(9)	<= reg_wdata(9);		-- SRL pattern
+	reg_rdata(10)	<= reg_wdata(10);		-- BRAM pattern
+	reg_rdata(12)	<= reg_wdata(12);		-- DSP A1 pattern
+	reg_rdata(13)	<= reg_wdata(13);		-- DSP A2 pattern
+	reg_rdata(14)	<= reg_wdata(14);		-- DSP B1 pattern
+	reg_rdata(15)	<= reg_wdata(15);		-- DSP B2 pattern
    
   	-----------------------------------------------------------------------------
 	-- Clock Crossing
 	----------------------------------------------------------------------------- 
 	i_cc_to_sink : entity work.psi_common_status_cc
 		generic map (
-			DataWidth_g		=> 4
+			DataWidth_g		=> 5
 		)
 		port map (
 			ClkA		=> s00_axi_aclk,
@@ -237,32 +254,36 @@ begin
 			DataA(1)	=> reg_wdata(1)(0),
 			DataA(2)	=> reg_wdata(2)(0),
 			DataA(3)	=> reg_wdata(3)(0),
+			DataA(4)	=> reg_wdata(4)(0),
 			ClkB		=> ClkPowerSink,
 			RstInB		=> '0',
 			RstOutB		=> RstPowerSink,
 			DataB(0)	=> EnaFf,
 			DataB(1)	=> EnaSrl,
 			DataB(2)	=> EnaBram,
-			DataB(3)	=> EnaGlobal
+			DataB(3)	=> EnaDsp,
+			DataB(4)	=> EnaGlobal
 		);
 		
 	i_cc_from_sink : entity work.psi_common_status_cc
 		generic map (
-			DataWidth_g		=> 97
+			DataWidth_g		=> 129
 		)
 		port map (
-			ClkA				=> ClkPowerSink,
-			RstInA				=> '0',
-			DataA(31 downto 0)	=> PatternOutFf,
-			DataA(32)			=> PatternOutSrl,
-			DataA(64 downto 33)	=> PatternOutBramA,
-			DataA(96 downto 65)	=> PatternOutBramB,
-			ClkB				=> s00_axi_aclk,
-			RstInB				=> AxiRst,
-			DataB(31 downto 0)	=> reg_rdata(8),		-- Outputs are fed to registers only to prevent optimization!
-			DataB(32)			=> reg_rdata(9)(0),		-- Outputs are fed to registers only to prevent optimization!
-			DataB(64 downto 33)	=> reg_rdata(10),		-- Outputs are fed to registers only to prevent optimization!
-			DataB(96 downto 65)	=> reg_rdata(11)		-- Outputs are fed to registers only to prevent optimization!
+			ClkA					=> ClkPowerSink,
+			RstInA					=> '0',
+			DataA(31 downto 0)		=> PatternOutFf,
+			DataA(32)				=> PatternOutSrl,
+			DataA(64 downto 33)		=> PatternOutBramA,
+			DataA(96 downto 65)		=> PatternOutBramB,
+			DataA(128 downto 97)	=> PatternOutDsp,
+			ClkB					=> s00_axi_aclk,
+			RstInB					=> AxiRst,
+			DataB(31 downto 0)		=> reg_rdata(20),		-- Outputs are fed to registers only to prevent optimization!
+			DataB(32)				=> reg_rdata(21)(0),	-- Outputs are fed to registers only to prevent optimization!
+			DataB(64 downto 33)		=> reg_rdata(22),		-- Outputs are fed to registers only to prevent optimization!
+			DataB(96 downto 65)		=> reg_rdata(23),		-- Outputs are fed to registers only to prevent optimization!
+			DataB(128 downto 97)	=> reg_rdata(24)		-- Outputs are fed to registers only to prevent optimization!
 		);
 		
 	i_cc_pattern_ff : entity work.psi_common_simple_cc
@@ -308,6 +329,25 @@ begin
 			RstInB		=> '0',
 			DataB		=> PatternBram,
 			VldB		=> PatternSetBram
+		);
+		
+	i_cc_pattern_dsp : entity work.psi_common_status_cc
+		generic map (
+			DataWidth_g		=> 128
+		)
+		port map (
+			ClkA					=> s00_axi_aclk,
+			RstInA					=> AxiRst,
+			DataA(31 downto 0)		=> reg_wdata(12),
+			DataA(63 downto 32)		=> reg_wdata(13),
+			DataA(95 downto 64)		=> reg_wdata(14),
+			DataA(127 downto 96)	=> reg_wdata(15),
+			ClkB					=> ClkPowerSink,
+			RstInB					=> '0',
+			DataB(31 downto 0)		=> PatternDspA1,
+			DataB(63 downto 32)		=> PatternDspA2,
+			DataB(95 downto 64)		=> PatternDspB1,
+			DataB(127 downto 96)	=> PatternDspB2
 		);
    
 	-----------------------------------------------------------------------------
@@ -360,6 +400,25 @@ begin
 			PatternIn	=> PatternBram,
 			PatternOutA	=> PatternOutBramA,
 			PatternOutB	=> PatternOutBramB
+		);
+		
+	EnaDspLocal <= EnaDsp and EnaGlobal;
+	i_dsp : entity work.power_sink_dsp
+		generic map (
+			InAWidth_g	=> DspInAWidth_g,
+			InBWidth_g	=> DspInBWidth_g,
+			AccuWidth_g	=> DspAccuWidth_g,
+			DspCount_g	=> DspCount_g
+		)
+		port map (
+			Clk			=> ClkPowerSink,
+			Rst			=> RstPowerSink,	
+			Enable		=> EnaDspLocal,
+			PatternInA1	=> PatternDspA1,
+			PatternInA2	=> PatternDspA2,
+			PatternInB1	=> PatternDspB1,
+			PatternInB2	=> PatternDspB2,
+			PatternOut	=> PatternOutDsp
 		);
    
 	

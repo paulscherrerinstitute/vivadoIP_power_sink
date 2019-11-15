@@ -40,6 +40,7 @@ psi::sim::add_sources "../hdl" {
 	power_sink_ff.vhd \
 	power_sink_srl.vhd \
 	power_sink_bram.vhd \
+	power_sink_dsp.vhd \
 	power_sink_wrp.vhd \
 } -tag src
 
