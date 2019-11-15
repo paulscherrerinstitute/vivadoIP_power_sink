@@ -19,3 +19,6 @@ AND3 between FF:
 AND14 between FF:	
 1.1A   -> 4.3A = ~3.2A
 59809 Logic LUT
+
+With DSP Slices and @333.33 MHz:
+1.3A -> 7.1A	= ~5.8A

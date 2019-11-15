@@ -293,8 +293,8 @@ begin
 		port map (
 			ClkA		=> s00_axi_aclk,
 			RstInA		=> AxiRst,
-			DataA		=> reg_wdata(4),
-			VldA		=> reg_wr(4),
+			DataA		=> reg_wdata(8),
+			VldA		=> reg_wr(8),
 			ClkB		=> ClkPowerSink,
 			RstInB		=> '0',
 			DataB		=> PatternFf,
@@ -308,8 +308,8 @@ begin
 		port map (
 			ClkA		=> s00_axi_aclk,
 			RstInA		=> AxiRst,
-			DataA		=> reg_wdata(5),
-			VldA		=> reg_wr(5),
+			DataA		=> reg_wdata(9),
+			VldA		=> reg_wr(9),
 			ClkB		=> ClkPowerSink,
 			RstInB		=> '0',
 			DataB		=> PatternSrl,
@@ -323,8 +323,8 @@ begin
 		port map (
 			ClkA		=> s00_axi_aclk,
 			RstInA		=> AxiRst,
-			DataA		=> reg_wdata(6),
-			VldA		=> reg_wr(6),
+			DataA		=> reg_wdata(10),
+			VldA		=> reg_wr(10),
 			ClkB		=> ClkPowerSink,
 			RstInB		=> '0',
 			DataB		=> PatternBram,

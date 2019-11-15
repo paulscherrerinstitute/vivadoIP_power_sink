@@ -48,6 +48,15 @@ end entity;
 -- Architecture Declaration
 ------------------------------------------------------------------------------
 architecture rtl of power_sink_dsp is	
+
+	-- DSP Column Switch Characteristics
+	constant DspMacroStackSize_c	: integer := 50;	-- Allow switching the DSP column every 50 DSP slices (add 2 pl registers)
+	constant DspColSwitchPlStg_c	: integer := 2;		-- pipeline stages to switch DSP column
+	
+	-- DSP slices are split into columns on the device. If the synthesis engine decides to use direct connections between adjecant DSP slices,
+	-- they must be in the same column (otherwase the placer throws errors). Since this entity use direct connections between adjecant DSP slices,
+	-- they would have to be all in one column. For large amounts of DSP slices this is not possible, therefore some pipelining is added after a few 
+	-- DSP slices to alow the tool to switch the DSP column. 
 	
 	signal PatternCnt 	: integer range 0 to 3;
 	signal MultInA		: std_logic_vector(InAWidth_g-1 downto 0);
@@ -110,10 +119,13 @@ begin
 	
 	-- VHDL Implementation of the usual Xilinx DSP Slice architecture
 	g_dsp_chain : for i in 0 to DspCount_g-1 generate
-		signal AReg : InA_t(0 to 1);
-		signal BReg : InB_t(0 to 1);
-		signal Mult : std_logic_vector(InAWidth_g+InBWidth_g-1 downto 0);
-		signal Sum 	: std_logic_vector(AccuWidth_g-1 downto 0);
+		signal AReg 	: InA_t(0 to 1);
+		signal BReg 	: InB_t(0 to 1);
+		signal Mult 	: std_logic_vector(InAWidth_g+InBWidth_g-1 downto 0);
+		signal Sum 		: std_logic_vector(AccuWidth_g-1 downto 0);
+		signal APl		: InA_t(0 to DspColSwitchPlStg_c-1);
+		signal BPl		: InB_t(0 to DspColSwitchPlStg_c-1);
+		signal SumPl	: Sum_t(0 to DspColSwitchPlStg_c-1);
 	begin
 		p_dsp : process(Clk)
 		begin
@@ -125,18 +137,29 @@ begin
 					BReg(1) <= BReg(0);
 					Mult <= std_logic_vector(signed(AReg(1)) * signed(BReg(1)));
 					Sum <= std_logic_vector(signed(SumChain(i)) + signed(Mult));		
-				else
-					AReg <= (others => (others => '0'));
-					BReg <= (others => (others => '0'));
-					Mult <= (others => '0');
-					Sum <= (others => '0');
 				end if;
 			end if;
 		end process;
 		
-		SumChain(i+1) <= Sum;
-		InAChain(i+1) <= AReg(0);
-		InBChain(i+1) <= BReg(0);
+		g_samecol : if (i+1) mod DspMacroStackSize_c /= 0 generate
+			SumChain(i+1) <= Sum;
+			InAChain(i+1) <= AReg(0);
+			InBChain(i+1) <= BReg(0);
+		end generate;
+		
+		g_switchcol : if (i+1) mod DspMacroStackSize_c = 0 generate
+			p_pipeline : process(Clk)
+			begin
+				if rising_edge(Clk) then
+					APl <= AReg(0) & APl(0 to APl'high-1);
+					BPl <= BReg(0) & BPl(0 to BPl'high-1);
+					SumPl <= Sum & SumPl(0 to SumPl'high-1);				
+				end if;
+			end process;
+			SumChain(i+1) <= SumPl(DspColSwitchPlStg_c-1);
+			InAChain(i+1) <= APl(DspColSwitchPlStg_c-1);
+			InBChain(i+1) <= BPl(DspColSwitchPlStg_c-1);
+		end generate;
 	end generate;
 	
 end;

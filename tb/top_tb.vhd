@@ -89,6 +89,7 @@ begin
 			BramDepth_g	=> 16,
 			BramWidth_g	=> 18,
 			BramCount_g	=> 4,
+			DspCount_g  => 50,
 			-- AXI
 			C_S00_AXI_ID_WIDTH     	 	=> ID_WIDTH
 		)
