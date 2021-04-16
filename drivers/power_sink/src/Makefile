@@ -5,16 +5,12 @@ COMPILER_FLAGS=
 EXTRA_COMPILER_FLAGS=
 LIB=libxil.a
 
-CC_FLAGS = $(COMPILER_FLAGS)
-ECC_FLAGS = $(EXTRA_COMPILER_FLAGS)
-
 RELEASEDIR=../../../lib
 INCLUDEDIR=../../../include
 INCLUDES=-I./. -I${INCLUDEDIR}
 
 INCLUDEFILES=*.h
 LIBSOURCES=*.c
-OUTS = *.o
 OBJECTS = $(addsuffix .o, $(basename $(wildcard *.c)))
 ASSEMBLY_OBJECTS = $(addsuffix .o, $(basename $(wildcard *.S)))
 
