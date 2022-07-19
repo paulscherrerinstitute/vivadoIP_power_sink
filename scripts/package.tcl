@@ -14,7 +14,7 @@ namespace import -force psi::ip_package::latest::*
 # General Information
 ###############################################################
 set IP_NAME power_sink
-set IP_VERSION 1.0
+set IP_VERSION 1.1
 set IP_REVISION "auto"
 set IP_LIBRARY PSI
 set IP_DESCIRPTION "Logic that wastes power for testing purposes"
