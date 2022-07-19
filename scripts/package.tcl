@@ -70,6 +70,9 @@ add_drivers_relative ../drivers/power_sink { \
 #User Parameters
 gui_add_page "Fabric"
 
+gui_create_parameter "Implement_g" "Implement IP"
+gui_add_parameter
+
 gui_create_parameter "FlipFlogs_g" "Number of Flip-Flops to toggle"
 gui_parameter_set_range 1024 214783647
 gui_add_parameter

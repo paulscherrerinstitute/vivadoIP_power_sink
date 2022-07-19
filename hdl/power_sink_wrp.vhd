@@ -23,6 +23,7 @@ entity power_sink_wrp is
 	generic
 	(	
 		-- Power Sink Parameters (defaults are choosen small for quick test synthesis)
+    Implement_g   : boolean := true;
 		FlipFlogs_g		: positive range 1024 to 214783647	:= 1024;
 		AddLuts_g		: boolean							:= true;
 		LutInputs_g		: integer range 2 to 30				:= 30;
@@ -222,7 +223,13 @@ begin
       o_reg_wr                    => reg_wr,
       o_reg_wdata                 => reg_wdata
    );
-   
+
+   -- use Implement_g to skip implementation of the big logic blocks for fast compilation times during tests:
+   gen_noimpl: if Implement_g = false generate
+    reg_rdata <= (others=>(others=>'0'));
+  end generate;
+
+   gen_impl: if Implement_g = true generate
     -----------------------------------------------------------------------------
 	-- Register Bank
 	-----------------------------------------------------------------------------
@@ -420,7 +427,7 @@ begin
 			PatternInB2	=> PatternDspB2,
 			PatternOut	=> PatternOutDsp
 		);
-   
-	
+
+  end generate;
   
 end rtl;

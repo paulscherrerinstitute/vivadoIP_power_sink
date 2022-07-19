@@ -3,6 +3,7 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "Component_Name"
   #Adding Page
   set Fabric [ipgui::add_page $IPINST -name "Fabric"]
+  ipgui::add_param $IPINST -name "Implement_g" -parent ${Fabric}
   ipgui::add_param $IPINST -name "FlipFlogs_g" -parent ${Fabric}
   ipgui::add_param $IPINST -name "AddLuts_g" -parent ${Fabric}
   ipgui::add_param $IPINST -name "LutInputs_g" -parent ${Fabric}
@@ -115,6 +116,15 @@ proc validate_PARAM_VALUE.FlipFlogs_g { PARAM_VALUE.FlipFlogs_g } {
 	return true
 }
 
+proc update_PARAM_VALUE.Implement_g { PARAM_VALUE.Implement_g } {
+	# Procedure called to update Implement_g when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.Implement_g { PARAM_VALUE.Implement_g } {
+	# Procedure called to validate Implement_g
+	return true
+}
+
 proc update_PARAM_VALUE.LutInputs_g { PARAM_VALUE.LutInputs_g } {
 	# Procedure called to update LutInputs_g when any of the dependent parameters in the arguments change
 }
@@ -142,6 +152,11 @@ proc validate_PARAM_VALUE.SrlSize_g { PARAM_VALUE.SrlSize_g } {
 	return true
 }
 
+
+proc update_MODELPARAM_VALUE.Implement_g { MODELPARAM_VALUE.Implement_g PARAM_VALUE.Implement_g } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.Implement_g}] ${MODELPARAM_VALUE.Implement_g}
+}
 
 proc update_MODELPARAM_VALUE.FlipFlogs_g { MODELPARAM_VALUE.FlipFlogs_g PARAM_VALUE.FlipFlogs_g } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
