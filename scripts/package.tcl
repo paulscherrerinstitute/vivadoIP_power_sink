@@ -14,7 +14,7 @@ namespace import -force psi::ip_package::latest::*
 # General Information
 ###############################################################
 set IP_NAME power_sink
-set IP_VERSION 1.0
+set IP_VERSION 1.1
 set IP_REVISION "auto"
 set IP_LIBRARY PSI
 set IP_DESCIRPTION "Logic that wastes power for testing purposes"
@@ -69,6 +69,9 @@ add_drivers_relative ../drivers/power_sink { \
 
 #User Parameters
 gui_add_page "Fabric"
+
+gui_create_parameter "Implement_g" "Implement IP"
+gui_add_parameter
 
 gui_create_parameter "FlipFlogs_g" "Number of Flip-Flops to toggle"
 gui_parameter_set_range 1024 214783647
