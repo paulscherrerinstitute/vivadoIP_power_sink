@@ -158,14 +158,14 @@ begin
    generic map
    (
 	  -- Reset Values
-	  ResetVal_g						   => RegResetVal_c,	-- Default pattern is all A's	(always toggle)
+     rst_val_g				 => RegResetVal_c,	-- Default pattern is all A's	(always toggle)
 												
       -- Users parameters
-      NumReg_g                             => USER_SLV_NUM_REG,
-      UseMem_g                             => false,
+      num_reg_g                          => USER_SLV_NUM_REG,
+      use_mem_g                          => false,
       -- Parameters of Axi Slave Bus Interface
-      AxiIdWidth_g                         => C_S00_AXI_ID_WIDTH,
-      AxiAddrWidth_g                       => 8
+      axi_id_width_g                     => C_S00_AXI_ID_WIDTH,
+      axi_addr_width_g                   => 8
    )
    port map
    (
@@ -252,109 +252,109 @@ begin
 	----------------------------------------------------------------------------- 
 	i_cc_to_sink : entity work.psi_common_status_cc
 		generic map (
-			DataWidth_g		=> 5
+			width_g		=> 5
 		)
 		port map (
-			ClkA		=> s00_axi_aclk,
-			RstInA		=> AxiRst,
-			DataA(0)	=> reg_wdata(0)(0),
-			DataA(1)	=> reg_wdata(1)(0),
-			DataA(2)	=> reg_wdata(2)(0),
-			DataA(3)	=> reg_wdata(3)(0),
-			DataA(4)	=> reg_wdata(4)(0),
-			ClkB		=> ClkPowerSink,
-			RstInB		=> '0',
-			RstOutB		=> RstPowerSink,
-			DataB(0)	=> EnaFf,
-			DataB(1)	=> EnaSrl,
-			DataB(2)	=> EnaBram,
-			DataB(3)	=> EnaDsp,
-			DataB(4)	=> EnaGlobal
+			a_clk_i		=> s00_axi_aclk,
+			a_rst_i		=> AxiRst,
+			a_dat_i(0)	=> reg_wdata(0)(0),
+			a_dat_i(1)	=> reg_wdata(1)(0),
+			a_dat_i(2)	=> reg_wdata(2)(0),
+			a_dat_i(3)	=> reg_wdata(3)(0),
+			a_dat_i(4)	=> reg_wdata(4)(0),
+			b_clk_i		=> ClkPowerSink,
+			b_rst_i		=> '0',
+			b_rst_o		=> RstPowerSink,
+			b_dat_o(0)	=> EnaFf,
+			b_dat_o(1)	=> EnaSrl,
+			b_dat_o(2)	=> EnaBram,
+			b_dat_o(3)	=> EnaDsp,
+			b_dat_o(4)	=> EnaGlobal
 		);
 		
 	i_cc_from_sink : entity work.psi_common_status_cc
 		generic map (
-			DataWidth_g		=> 129
+			width_g		=> 129
 		)
 		port map (
-			ClkA					=> ClkPowerSink,
-			RstInA					=> '0',
-			DataA(31 downto 0)		=> PatternOutFf,
-			DataA(32)				=> PatternOutSrl,
-			DataA(64 downto 33)		=> PatternOutBramA,
-			DataA(96 downto 65)		=> PatternOutBramB,
-			DataA(128 downto 97)	=> PatternOutDsp,
-			ClkB					=> s00_axi_aclk,
-			RstInB					=> AxiRst,
-			DataB(31 downto 0)		=> reg_rdata(20),		-- Outputs are fed to registers only to prevent optimization!
-			DataB(32)				=> reg_rdata(21)(0),	-- Outputs are fed to registers only to prevent optimization!
-			DataB(64 downto 33)		=> reg_rdata(22),		-- Outputs are fed to registers only to prevent optimization!
-			DataB(96 downto 65)		=> reg_rdata(23),		-- Outputs are fed to registers only to prevent optimization!
-			DataB(128 downto 97)	=> reg_rdata(24)		-- Outputs are fed to registers only to prevent optimization!
+			a_clk_i			=> ClkPowerSink,
+			a_rst_i			=> '0',
+			a_dat_i(31 downto 0)	=> PatternOutFf,
+			a_dat_i(32)		=> PatternOutSrl,
+			a_dat_i(64 downto 33)	=> PatternOutBramA,
+			a_dat_i(96 downto 65)	=> PatternOutBramB,
+			a_dat_i(128 downto 97)	=> PatternOutDsp,
+			b_clk_i			=> s00_axi_aclk,
+			b_rst_i			=> AxiRst,
+			b_dat_o(31 downto 0)	=> reg_rdata(20),		-- Outputs are fed to registers only to prevent optimization!
+			b_dat_o(32)		=> reg_rdata(21)(0),	-- Outputs are fed to registers only to prevent optimization!
+			b_dat_o(64 downto 33)	=> reg_rdata(22),		-- Outputs are fed to registers only to prevent optimization!
+			b_dat_o(96 downto 65)	=> reg_rdata(23),		-- Outputs are fed to registers only to prevent optimization!
+			b_dat_o(128 downto 97)	=> reg_rdata(24)		-- Outputs are fed to registers only to prevent optimization!
 		);
 		
 	i_cc_pattern_ff : entity work.psi_common_simple_cc
 		generic map (
-			DataWidth_g		=> 32
+			width_g		=> 32
 		)
 		port map (
-			ClkA		=> s00_axi_aclk,
-			RstInA		=> AxiRst,
-			DataA		=> reg_wdata(8),
-			VldA		=> reg_wr(8),
-			ClkB		=> ClkPowerSink,
-			RstInB		=> '0',
-			DataB		=> PatternFf,
-			VldB		=> PatternSetFf
+			a_clk_i		=> s00_axi_aclk,
+			a_rst_i		=> AxiRst,
+			a_dat_i		=> reg_wdata(8),
+			a_vld_i		=> reg_wr(8),
+			b_clk_i		=> ClkPowerSink,
+			b_rst_i		=> '0',
+			b_dat_o		=> PatternFf,
+			b_vld_o		=> PatternSetFf
 		);
 		
 	i_cc_pattern_srl : entity work.psi_common_simple_cc
 		generic map (
-			DataWidth_g		=> 32
+			width_g		=> 32
 		)
 		port map (
-			ClkA		=> s00_axi_aclk,
-			RstInA		=> AxiRst,
-			DataA		=> reg_wdata(9),
-			VldA		=> reg_wr(9),
-			ClkB		=> ClkPowerSink,
-			RstInB		=> '0',
-			DataB		=> PatternSrl,
-			VldB		=> PatternSetSrl
+			a_clk_i		=> s00_axi_aclk,
+			a_rst_i		=> AxiRst,
+			a_dat_i		=> reg_wdata(9),
+			a_vld_i		=> reg_wr(9),
+			b_clk_i		=> ClkPowerSink,
+			b_rst_i		=> '0',
+			b_dat_o		=> PatternSrl,
+			b_vld_o		=> PatternSetSrl
 		);
 		
 	i_cc_pattern_bram : entity work.psi_common_simple_cc
 		generic map (
-			DataWidth_g		=> 32
+			width_g		=> 32
 		)
 		port map (
-			ClkA		=> s00_axi_aclk,
-			RstInA		=> AxiRst,
-			DataA		=> reg_wdata(10),
-			VldA		=> reg_wr(10),
-			ClkB		=> ClkPowerSink,
-			RstInB		=> '0',
-			DataB		=> PatternBram,
-			VldB		=> PatternSetBram
+			a_clk_i		=> s00_axi_aclk,
+			a_rst_i		=> AxiRst,
+			a_dat_i		=> reg_wdata(10),
+			a_vld_i		=> reg_wr(10),
+			b_clk_i		=> ClkPowerSink,
+			b_rst_i		=> '0',
+			b_dat_o		=> PatternBram,
+			b_vld_o		=> PatternSetBram
 		);
 		
 	i_cc_pattern_dsp : entity work.psi_common_status_cc
 		generic map (
-			DataWidth_g		=> 128
+			width_g		        => 128
 		)
 		port map (
-			ClkA					=> s00_axi_aclk,
-			RstInA					=> AxiRst,
-			DataA(31 downto 0)		=> reg_wdata(12),
-			DataA(63 downto 32)		=> reg_wdata(13),
-			DataA(95 downto 64)		=> reg_wdata(14),
-			DataA(127 downto 96)	=> reg_wdata(15),
-			ClkB					=> ClkPowerSink,
-			RstInB					=> '0',
-			DataB(31 downto 0)		=> PatternDspA1,
-			DataB(63 downto 32)		=> PatternDspA2,
-			DataB(95 downto 64)		=> PatternDspB1,
-			DataB(127 downto 96)	=> PatternDspB2
+			a_clk_i			=> s00_axi_aclk,
+			a_rst_i			=> AxiRst,
+			a_dat_i(31 downto 0)    => reg_wdata(12),
+			a_dat_i(63 downto 32)	=> reg_wdata(13),
+			a_dat_i(95 downto 64)	=> reg_wdata(14),
+			a_dat_i(127 downto 96)	=> reg_wdata(15),
+			b_clk_i			=> ClkPowerSink,
+			b_rst_i			=> '0',
+			b_dat_o(31 downto 0)	=> PatternDspA1,
+			b_dat_o(63 downto 32)	=> PatternDspA2,
+			b_dat_o(95 downto 64)	=> PatternDspB1,
+			b_dat_o(127 downto 96)	=> PatternDspB2
 		);
    
 	-----------------------------------------------------------------------------
@@ -363,13 +363,13 @@ begin
 	EnaFfLocal <= EnaFf and EnaGlobal;
 	i_ff : entity work.power_sink_ff
 		generic map (
-			FlipFlogs_g	=> FlipFlogs_g,
-			AddLuts_g => AddLuts_g,
-			LutInputs_g => LutInputs_g
+			FlipFlogs_g     => FlipFlogs_g,
+			AddLuts_g       => AddLuts_g,
+			LutInputs_g     => LutInputs_g
 		)
 		port map (
-			Clk			=> ClkPowerSink,
-			Rst			=> RstPowerSink,
+			Clk		=> ClkPowerSink,
+			Rst		=> RstPowerSink,
 			Enable		=> EnaFfLocal,
 			PatternSet	=> PatternSetFf,
 			PatternIn	=> PatternFf,

@@ -102,7 +102,7 @@ begin
 			if AccuWidth_g <= 32 then
 				PatternOut <= SumChain(DspCount_g)(AccuWidth_g-1 downto 0);
 			else
-				PatternOut <= SumChain(DspCount_g)(31 downto 0) xor (ZerosVector(64-AccuWidth_g) & SumChain(DspCount_g)(AccuWidth_g-1 downto 32));
+				PatternOut <= SumChain(DspCount_g)(31 downto 0) xor (zeros_vector(64-AccuWidth_g) & SumChain(DspCount_g)(AccuWidth_g-1 downto 32));
 			end if;
 		
 			if Rst = '1' then
@@ -111,7 +111,7 @@ begin
 			
 		end if;
 	end process;	
-	
+
 
 	InAChain(0) <= MultInA;
 	InBChain(0) <= MultInB;

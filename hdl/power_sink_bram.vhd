@@ -62,7 +62,7 @@ architecture rtl of power_sink_bram is
 	type Addr_t is array (natural range <>) of std_logic_vector(log2ceil(BramDepth_g)-1 downto 0);
 	signal AddrA					: Addr_t(0 to BramCount_g-1);
 	signal AddrB					: Addr_t(0 to BramCount_g-1);
-	
+
 begin
 
 	p_impl : process(Clk)
@@ -91,8 +91,8 @@ begin
 					PatternOutA(BramWidth_g-1 downto 0) <= DataA(DataA'high);
 					PatternOutB(BramWidth_g-1 downto 0) <= DataB(DataA'high);
 				else
-					PatternOutA <= DataA(DataA'high)(31 downto 0) xor (DataA(DataA'high)(BramWidth_g-1 downto 32) & ZerosVector(64-BramWidth_g));
-					PatternOutB <= DataB(DataB'high)(31 downto 0) xor (DataB(DataA'high)(BramWidth_g-1 downto 32) & ZerosVector(64-BramWidth_g));					
+					PatternOutA <= DataA(DataA'high)(31 downto 0) xor (DataA(DataA'high)(BramWidth_g-1 downto 32) & zeros_vector(64-BramWidth_g));
+					PatternOutB <= DataB(DataB'high)(31 downto 0) xor (DataB(DataA'high)(BramWidth_g-1 downto 32) & zeros_vector(64-BramWidth_g));					
 				end if;
 			end if;
 			
@@ -124,21 +124,21 @@ begin
 	g_bram : for i in 0 to BramCount_g-1 generate
 		i_ram : entity work.psi_common_tdp_ram
 			generic map (
-				Depth_g		=> BramDepth_g,
-				Width_g		=> BramWidth_g,
-				Behavior_g	=> Behavior_g
+				depth_g		=> BramDepth_g,
+				width_g		=> BramWidth_g,
+				behavior_g	=> Behavior_g
 			)
 			port map (
-				ClkA		=> Clk,
-				AddrA		=> AddrA(i),
-				WrA			=> '1',
-				DinA		=> DataA(i),
-				DoutA		=> DataA(i+1),
-				ClkB		=> Clk,
-				AddrB		=> AddrB(i),
-				WrB			=> '1',
-				DinB		=> DataB(i),
-				DoutB		=> DataB(i+1)
+				a_clk_i		=> Clk,
+				a_addr_i	=> AddrA(i),
+				a_wr_i		=> '1',
+				a_dat_i		=> DataA(i),
+				a_dat_o		=> DataA(i+1),
+				b_clk_i		=> Clk,
+				b_addr_i	=> AddrB(i),
+				b_wr_i		=> '1',
+				b_dat_i		=> DataB(i),
+				b_dat_o		=> DataB(i+1)
 			);
 		end generate;
 	
