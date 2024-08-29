@@ -42,12 +42,14 @@ end entity;
 -- Architecture Declaration
 ------------------------------------------------------------------------------
 architecture rtl of power_sink_srl is	
-	attribute srl_style : string;
 
-	signal PatternGen		: std_logic_vector(31 downto 0);
-	signal SrlChain			: std_logic_vector(SrlSize_g*SrlCount_g-1 downto 0);
+  attribute srl_style : string;
+
+  signal en		        : std_logic;
+  signal PatternGen		: std_logic_vector(31 downto 0);
+  signal SrlChain		: std_logic_vector(SrlSize_g*SrlCount_g-1 downto 0);
 	
-	attribute srl_style of SrlChain : signal is "srl";
+  attribute srl_style of SrlChain : signal is "srl";
 
 	
 begin
@@ -56,7 +58,8 @@ begin
   begin
     if rising_edge(Clk) then
       PatternOut <= SrlChain(SrlChain'high);		
-
+      en         <= Enable;
+                    
       if Rst = '1' then
         PatternGen <= X"AAAA_AAAA";
       elsif PatternSet = '1' then
@@ -71,7 +74,7 @@ begin
   p_impl : process(Clk)
   begin
     if rising_edge(Clk) then
-      if Enable = '1' then
+      if en = '1' then
         SrlChain <= SrlChain(SrlChain'high-1 downto 0) & PatternGen(31);
       end if;
     end if;
