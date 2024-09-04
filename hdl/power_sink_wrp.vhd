@@ -26,7 +26,7 @@ entity power_sink_wrp is
     Implement_g   : boolean := true;
 		FlipFlogs_g		: positive range 1024 to 214783647	:= 1024;
 		AddLuts_g		: boolean							:= true;
-		LutInputs_g		: integer range 2 to 30				:= 30;
+		LutInputs_g		: positive range 2 to 30				:= 30;
 		SrlSize_g		: positive range 4 to 214783647		:= 32;		-- Use 32 for 7Series one SRL per FF
 		SrlCount_g		: positive range 4 to 214783647		:= 32;
 		BramDepth_g		: positive range 4 to 214783647 	:= 1024;
@@ -227,7 +227,9 @@ begin
    -- use Implement_g to skip implementation of the big logic blocks for fast compilation times during tests:
    gen_noimpl: if Implement_g = false generate
     reg_rdata <= (others=>(others=>'0'));
-  end generate;
+    
+
+   end generate;
 
    gen_impl: if Implement_g = true generate
     -----------------------------------------------------------------------------
@@ -246,7 +248,23 @@ begin
 	reg_rdata(13)	<= reg_wdata(13);		-- DSP A2 pattern
 	reg_rdata(14)	<= reg_wdata(14);		-- DSP B1 pattern
 	reg_rdata(15)	<= reg_wdata(15);		-- DSP B2 pattern
-   
+
+        --reg 20 - 24 below
+
+        --generic parameters
+        reg_rdata(25)	<= std_logic_vector(to_unsigned(FlipFlogs_g,32));
+        reg_rdata(26)	<= std_logic_vector(to_unsigned(LutInputs_g,32)) when AddLuts_g else std_logic_vector(to_unsigned(0,32));
+
+        reg_rdata(27)	<= std_logic_vector(to_unsigned(SrlSize_g,32));
+        reg_rdata(28)	<= std_logic_vector(to_unsigned(SrlCount_g,32));
+
+        reg_rdata(29)	<= std_logic_vector(to_unsigned(BramDepth_g,32));
+        reg_rdata(30)	<= std_logic_vector(to_unsigned(BramCount_g,32));
+
+        reg_rdata(31)	<= std_logic_vector(to_unsigned(DspCount_g,32));
+
+        
+
   	-----------------------------------------------------------------------------
 	-- Clock Crossing
 	----------------------------------------------------------------------------- 
@@ -379,16 +397,16 @@ begin
 	EnaSrlLocal <= EnaSrl and EnaGlobal;
 	i_srl : entity work.power_sink_srl
 		generic map (
-			SrlSize_g	=> SrlSize_g,
-			SrlCount_g	=> SrlCount_g
+			srl_size_g	=> SrlSize_g,
+			srl_count_g	=> SrlCount_g
 		)
 		port map (
-			Clk			=> ClkPowerSink,
-			Rst			=> RstPowerSink,
-			Enable		=> EnaSrlLocal,
-			PatternSet	=> PatternSetSrl,
-			PatternIn	=> PatternSrl,
-			PatternOut	=> PatternOutSrl
+			clk_i		=> ClkPowerSink,
+			rst_i		=> RstPowerSink,
+			en_i		=> EnaSrlLocal,
+			set_i	        => PatternSetSrl,
+			pattern_i	=> PatternSrl,
+			ssr_o	        => PatternOutSrl
 		);
 		
 	EnaBramLocal <= EnaBram and EnaGlobal;
@@ -400,8 +418,8 @@ begin
 			Behavior_g	=> "RBW"
 		)
 		port map (
-			Clk			=> ClkPowerSink,
-			Rst			=> RstPowerSink,
+			Clk		=> ClkPowerSink,
+			Rst		=> RstPowerSink,
 			Enable		=> EnaBramLocal,
 			PatternSet	=> PatternSetBram,
 			PatternIn	=> PatternBram,
@@ -418,8 +436,8 @@ begin
 			DspCount_g	=> DspCount_g
 		)
 		port map (
-			Clk			=> ClkPowerSink,
-			Rst			=> RstPowerSink,	
+			Clk		=> ClkPowerSink,
+			Rst		=> RstPowerSink,	
 			Enable		=> EnaDspLocal,
 			PatternInA1	=> PatternDspA1,
 			PatternInA2	=> PatternDspA2,
