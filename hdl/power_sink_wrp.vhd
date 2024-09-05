@@ -395,7 +395,7 @@ begin
 		);
 		
 	EnaSrlLocal <= EnaSrl and EnaGlobal;
-	i_srl : entity work.power_sink_srl
+	i_srl : entity work.power_sink_linked_srl
 		generic map (
 			srl_size_g	=> SrlSize_g,
 			srl_count_g	=> SrlCount_g

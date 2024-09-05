@@ -372,7 +372,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>4eb0a8ed</spirit:value>
+            <spirit:value>e9132d81</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -388,7 +388,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>4eb0a8ed</spirit:value>
+            <spirit:value>e9132d81</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1219,6 +1219,11 @@
         <spirit:logicalName>power_sink_1_1</spirit:logicalName>
       </spirit:file>
       <spirit:file>
+        <spirit:name>hdl/power_sink_linked_srl.vhd</spirit:name>
+        <spirit:userFileType>vhdlSource-2008</spirit:userFileType>
+        <spirit:logicalName>power_sink_1_1</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
         <spirit:name>../../VHDL/psi_common/hdl/psi_common_pl_stage.vhd</spirit:name>
         <spirit:userFileType>vhdlSource-2008</spirit:userFileType>
         <spirit:logicalName>power_sink_1_1</spirit:logicalName>
@@ -1246,7 +1251,7 @@
       <spirit:file>
         <spirit:name>hdl/power_sink_wrp.vhd</spirit:name>
         <spirit:userFileType>vhdlSource-2008</spirit:userFileType>
-        <spirit:userFileType>CHECKSUM_7a5c4ea7</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_d5e8799c</spirit:userFileType>
         <spirit:logicalName>power_sink_1_1</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -1289,6 +1294,11 @@
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/power_sink_srl.vhd</spirit:name>
+        <spirit:userFileType>vhdlSource-2008</spirit:userFileType>
+        <spirit:logicalName>power_sink_1_1</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>hdl/power_sink_linked_srl.vhd</spirit:name>
         <spirit:userFileType>vhdlSource-2008</spirit:userFileType>
         <spirit:logicalName>power_sink_1_1</spirit:logicalName>
       </spirit:file>
@@ -1478,14 +1488,14 @@
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:vendorDisplayName>Paul Scherrer Institute</xilinx:vendorDisplayName>
       <xilinx:vendorURL>http://www.psi.ch</xilinx:vendorURL>
-      <xilinx:coreRevision>1692870793</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2023-08-24T09:54:16Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>1725445944</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2024-09-04T10:33:00Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
-      <xilinx:xilinxVersion>2022.1</xilinx:xilinxVersion>
+      <xilinx:xilinxVersion>2022.1_AR000033992</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="51cb901c"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="2b8fc426"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="0c36eaa6"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ed58ff0b"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="e26eb6ed"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="d567337a"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="23a0a429"/>

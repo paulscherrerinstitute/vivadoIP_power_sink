@@ -32,6 +32,7 @@ set_datasheet_relative "../doc/$IP_NAME.pdf"
 add_sources_relative { \
 	../hdl/power_sink_ff.vhd \
 	../hdl/power_sink_srl.vhd \
+	../hdl/power_sink_linked_srl.vhd \
 	../hdl/power_sink_bram.vhd \
 	../hdl/power_sink_dsp.vhd \
 	../hdl/power_sink_wrp.vhd \
