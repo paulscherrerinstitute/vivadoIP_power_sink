@@ -23,7 +23,7 @@ entity power_sink_wrp is
 	generic
 	(	
 		-- Power Sink Parameters (defaults are choosen small for quick test synthesis)
-    Implement_g   : boolean := true;
+                Implement_g   : boolean := true;
 		FlipFlogs_g		: positive range 1024 to 214783647	:= 1024;
 		AddLuts_g		: boolean							:= true;
 		LutInputs_g		: positive range 2 to 30				:= 30;
@@ -105,7 +105,7 @@ end entity power_sink_wrp;
 architecture rtl of power_sink_wrp is 
 
 	-- Array of desired number of chip enables for each address range
-	constant USER_SLV_NUM_REG               : integer              := 32; 
+	constant USER_SLV_NUM_REG               : integer              := 64; 
 	
 	-- IP Interconnect (IPIC) signal declarations
 	signal reg_rd                    		: std_logic_vector(USER_SLV_NUM_REG-1 downto  0);
@@ -252,16 +252,20 @@ begin
         --reg 20 - 24 below
 
         --generic parameters
-        reg_rdata(25)	<= std_logic_vector(to_unsigned(FlipFlogs_g,32));
-        reg_rdata(26)	<= std_logic_vector(to_unsigned(LutInputs_g,32)) when AddLuts_g else std_logic_vector(to_unsigned(0,32));
+        reg_rdata(32)	<= std_logic_vector(to_unsigned(FlipFlogs_g,32));
+        reg_rdata(33)	<= std_logic_vector(to_unsigned(LutInputs_g,32)) when AddLuts_g else std_logic_vector(to_unsigned(0,32));
 
-        reg_rdata(27)	<= std_logic_vector(to_unsigned(SrlSize_g,32));
-        reg_rdata(28)	<= std_logic_vector(to_unsigned(SrlCount_g,32));
+        reg_rdata(34)	<= std_logic_vector(to_unsigned(SrlSize_g,32));
+        reg_rdata(35)	<= std_logic_vector(to_unsigned(SrlCount_g,32));
 
-        reg_rdata(29)	<= std_logic_vector(to_unsigned(BramDepth_g,32));
-        reg_rdata(30)	<= std_logic_vector(to_unsigned(BramCount_g,32));
+        reg_rdata(36)	<= std_logic_vector(to_unsigned(BramWidth_g,32));
+        reg_rdata(37)	<= std_logic_vector(to_unsigned(BramDepth_g,32));
+        reg_rdata(38)	<= std_logic_vector(to_unsigned(BramCount_g,32));
 
-        reg_rdata(31)	<= std_logic_vector(to_unsigned(DspCount_g,32));
+        reg_rdata(39)	<= std_logic_vector(to_unsigned(DspInAWidth_g,32));
+        reg_rdata(40)	<= std_logic_vector(to_unsigned(DspInBWidth_g,32));
+        reg_rdata(41)	<= std_logic_vector(to_unsigned(DspAccuWidth_g,32));
+        reg_rdata(42)	<= std_logic_vector(to_unsigned(DspCount_g,32));
 
         
 
